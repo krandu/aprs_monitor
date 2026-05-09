@@ -1,1 +1,37 @@
+name: APRS 电池电压监控
 
+on:
+  schedule:
+    - cron: '*/30 * * * *'   # 每 30 分钟检查一次
+  workflow_dispatch:
+
+jobs:
+  check-voltage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Check APRS voltage
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          APRS_API_KEY: ${{ secrets.APRS_API_KEY }}
+        run: python aprs_monitor.py
+
+      - name: Commit updated state
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add aprs_state.json
+          git diff --staged --quiet || git commit -m "chore: update aprs state [skip ci]"
+          git push
