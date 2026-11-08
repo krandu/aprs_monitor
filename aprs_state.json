@@ -1,5 +1,5 @@
 {
-  "last_voltage": 62.8,
-  "last_alert_level": "ok",
-  "last_packet_time": "1794101856"
+  "last_voltage": 54.6,
+  "last_alert_level": "critical",
+  "last_packet_time": "1794125143"
 }
